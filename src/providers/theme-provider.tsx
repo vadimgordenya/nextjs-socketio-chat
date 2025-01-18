@@ -3,8 +3,7 @@ import React from 'react';
 import { ConfigProvider } from 'antd'
 
 function ThemeProvider({ children }: { children: React.ReactNode }) {
-  return <div>
-    <ConfigProvider theme={{
+  return <ConfigProvider theme={{
       token: {
         colorPrimary: '#31304D',
         borderRadius: 2,
@@ -22,7 +21,6 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
     }}>
       {children}
     </ConfigProvider>
-  </div>
 }
 
 export default ThemeProvider;
