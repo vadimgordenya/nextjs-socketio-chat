@@ -1,8 +1,11 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
-import { currentUser } from '@clerk/nextjs/server';
+import { connectMongoDB } from '@/config/db-config';
+import { GetCurrentUserFromMongoDB } from '@/server-actions/users';
+
+connectMongoDB();
 
 export default async function Home() {
-  const { username, firstName, lastName, emailAddresses } = await currentUser();
+  const { userName, name, email } = await GetCurrentUserFromMongoDB();
 
   return (
     <>
@@ -14,10 +17,9 @@ export default async function Home() {
         <UserButton />
       </SignedIn>
       <div className='flex flex-col gap-3 text-3xl'>
-        <span>First Name: {firstName}</span>
-        <span>Last Name: {lastName}</span>
-        <span>User Name: {username}</span>
-        <span>Email: {emailAddresses?.[0]?.emailAddress || ''}</span>
+        <span>Name: {name}</span>
+        <span>User Name: {userName}</span>
+        <span>Email: {email || ''}</span>
       </div>
     </>
   )
