@@ -4,12 +4,19 @@ import { Avatar, message } from 'antd';
 import { GetCurrentUserFromMongoDB } from '@/server-actions/users';
 import { UserType } from '@/interfaces';
 import CurrentUserInfo from '@/providers/layout-components/current-user-info';
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
+  const pathName = usePathname();
+  const isPublicRoute = pathName.includes('sign-in') || pathName.includes('sign-up');
   const [currentUser, setCurrentUser] = useState<UserType | null>(null);
   const [showCurrentUserInfo, setShowCurrentUserInfo] = useState(false);
 
   useEffect(() => {
+    if (isPublicRoute) {
+      return;
+    }
+
     const getCurrentUser = async () => {
       try {
         const response = await GetCurrentUserFromMongoDB();
@@ -25,7 +32,11 @@ export default function Header() {
     }
 
     getCurrentUser();
-  }, []);
+  }, [isPublicRoute]);
+
+  if (isPublicRoute) {
+    return null;
+  }
 
   return <div className="bg-gray-200 w-full p-5 flex justify-between items-center border-b border-solid border-gray-300">
     <div>

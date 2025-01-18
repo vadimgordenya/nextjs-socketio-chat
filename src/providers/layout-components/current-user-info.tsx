@@ -30,6 +30,7 @@ export default function CurrentUserInfo({ currentUser, setShowCurrentUserInfo, s
     try {
       setLoading(true);
       await signOut();
+      setShowCurrentUserInfo(false);
       message.success('Logged out successfully');
       router.push('/sign-in');
     } catch (error) {
