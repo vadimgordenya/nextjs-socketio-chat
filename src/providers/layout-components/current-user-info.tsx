@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useClerk } from '@clerk/nextjs';
 import { Button, Divider, Drawer, message, Upload } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 import { UserType } from '@/interfaces';
+import { uploadImageToFirebaseStorageAndReturnUrl } from '@/helpers/image-upload';
+import { UpdateUserProfile } from '@/server-actions/users';
+import { setCurrentUser } from '@/redux/userSlice';
 
 export default function CurrentUserInfo({ setShowCurrentUserInfo, showCurrentUserInfo }: {
   setShowCurrentUserInfo: (flag: boolean) => void,
@@ -14,6 +17,7 @@ export default function CurrentUserInfo({ setShowCurrentUserInfo, showCurrentUse
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { signOut } = useClerk();
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const userDataMap = [
@@ -42,7 +46,26 @@ export default function CurrentUserInfo({ setShowCurrentUserInfo, showCurrentUse
     }
   }
 
-  const onProfilePictureUpdate = () => {}
+  const onProfilePictureUpdate = async () => {
+    try {
+      setLoading(true);
+      const url = await uploadImageToFirebaseStorageAndReturnUrl(selectedFile);
+      const response = await UpdateUserProfile(currentUserData._id, { profilePicture: url });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      dispatch(setCurrentUser(response as UserType));
+      message.success('Profile image successfully updated!');
+      setShowCurrentUserInfo(false);
+    } catch (error) {
+      message.error(error.message);
+    } finally {
+      setLoading(false);
+      setSelectedFile(null);
+    }
+  }
 
   return <Drawer
     open={showCurrentUserInfo}
@@ -93,7 +116,7 @@ export default function CurrentUserInfo({ setShowCurrentUserInfo, showCurrentUse
           Update Profile Picture
         </Button>
         <Button
-          loading={loading}
+          loading={loading && !selectedFile}
           onClick={onLogout}
           className="w-full"
           block
