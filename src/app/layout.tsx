@@ -1,11 +1,5 @@
 import type { Metadata } from 'next';
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton
-} from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css';
 import ThemeProvider from '@/providers/theme-provider';
 
@@ -23,12 +17,6 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body>
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
           <ThemeProvider>
             {children}
           </ThemeProvider>
