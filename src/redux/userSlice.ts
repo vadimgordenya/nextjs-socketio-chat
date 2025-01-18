@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { UserType } from '@/interfaces';
 
 const userSlice = createSlice({
   name: 'user',
@@ -16,5 +17,10 @@ const userSlice = createSlice({
   }
 });
 
-export const { setCurrentUser, setCurrentUserId } = userSlice.reducer;
+export const { setCurrentUser, setCurrentUserId } = userSlice.actions;
 export default userSlice;
+
+export interface UserState {
+  currentUserData: UserType | null,
+  currentUserId: string
+}

@@ -1,16 +1,19 @@
 'use client';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Avatar, message } from 'antd';
 import { GetCurrentUserFromMongoDB } from '@/server-actions/users';
-import { UserType } from '@/interfaces';
 import CurrentUserInfo from '@/providers/layout-components/current-user-info';
 import { usePathname } from 'next/navigation';
+import { setCurrentUser, UserState } from '@/redux/userSlice';
+import { UserType } from '@/interfaces';
 
 export default function Header() {
   const pathName = usePathname();
   const isPublicRoute = pathName.includes('sign-in') || pathName.includes('sign-up');
-  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
+  const { currentUserData }: UserState = useSelector(state => state.user);
   const [showCurrentUserInfo, setShowCurrentUserInfo] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isPublicRoute) {
@@ -25,7 +28,7 @@ export default function Header() {
           throw new Error(response.error);
         }
 
-        setCurrentUser(response);
+        dispatch(setCurrentUser(response as UserType));
       } catch (error) {
         message.error(error.message);
       }
@@ -43,17 +46,16 @@ export default function Header() {
       <h1 className="text-2xl font-bold text-primary uppercase">Chat</h1>
     </div>
     <div className="gap-5 flex items-center">
-      <span className="text-sm">Current user: {currentUser?.name}</span>
+      <span className="text-sm">Current user: {currentUserData?.name}</span>
       <Avatar
         className="cursor-pointer"
         onClick={() => setShowCurrentUserInfo(true)}
-        src={currentUser?.profilePicture}
+        src={currentUserData?.profilePicture}
       />
     </div>
 
     {showCurrentUserInfo &&
       <CurrentUserInfo
-        currentUser={currentUser}
         setShowCurrentUserInfo={setShowCurrentUserInfo}
         showCurrentUserInfo={showCurrentUserInfo}
       />}
