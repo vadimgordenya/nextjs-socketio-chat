@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useClerk } from '@clerk/nextjs';
-import { Button, Divider, Drawer, message } from 'antd';
+import { Button, Divider, Drawer, message, Upload } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 import { UserType } from '@/interfaces';
@@ -12,6 +12,7 @@ export default function CurrentUserInfo({ setShowCurrentUserInfo, showCurrentUse
 }) {
   const { currentUserData }: UserType = useSelector(state => state.user);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { signOut } = useClerk();
   const router = useRouter();
 
@@ -41,6 +42,8 @@ export default function CurrentUserInfo({ setShowCurrentUserInfo, showCurrentUse
     }
   }
 
+  const onProfilePictureUpdate = () => {}
+
   return <Drawer
     open={showCurrentUserInfo}
     onClose={() => setShowCurrentUserInfo(false)}
@@ -48,8 +51,29 @@ export default function CurrentUserInfo({ setShowCurrentUserInfo, showCurrentUse
   >
     {currentUserData && <div className='flex flex-col gap-5'>
       <div className='flex flex-col gap-5 justify-center items-center'>
-        <img src={currentUserData.profilePicture} alt='profile' className='w-28 h-28 rounded-full' />
-        <span className='text-gray-500 cursor-pointer'>Change Profile Picture</span>
+        {!selectedFile && <img
+          src={
+            selectedFile
+              ? URL.createObjectURL(selectedFile)
+              : currentUserData.profilePicture
+          }
+          alt='profile'
+          className='w-28 h-28 rounded-full'
+        />}
+        <Upload
+          beforeUpload={(file) => {
+            setSelectedFile(file);
+
+            return false;
+          }}
+          onRemove={() => {
+            setSelectedFile(null);
+          }}
+          listType={selectedFile ? 'picture-circle' : 'text'}
+          maxCount={1}
+        >
+          Change Profile Picture
+        </Upload>
       </div>
 
       <Divider className='my-1 border-gray-200' />
@@ -58,7 +82,16 @@ export default function CurrentUserInfo({ setShowCurrentUserInfo, showCurrentUse
         {userDataMap.map(({ key, value }) => getProperty(key, value))}
       </div>
 
-      <div className="mt-5">
+      <div className="mt-5 flex flex-col gap-5">
+        <Button
+          loading={loading}
+          onClick={onProfilePictureUpdate}
+          className="w-full"
+          disabled={!selectedFile}
+          block
+        >
+          Update Profile Picture
+        </Button>
         <Button
           loading={loading}
           onClick={onLogout}
