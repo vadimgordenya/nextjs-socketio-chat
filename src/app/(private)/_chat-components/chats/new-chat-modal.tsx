@@ -1,10 +1,11 @@
 import { Button, Divider, message, Modal, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { UserType } from '@/interfaces';
 import { GetAllUsers } from '@/server-actions/users';
 import { UserState } from '@/redux/userSlice';
 import { CreateNewChat } from '@/server-actions/chats';
+import { ChatState, setChats } from '@/redux/chatSlice';
 
 export default function NewChatModal({
   showNewChatModal,
@@ -15,17 +16,19 @@ export default function NewChatModal({
 }) {
   const [users, setUsers] = useState<UserType[] | []>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedUserId, setSelectrUserId] = useState<string, null>('');
+  const [selectedUserId, setSelectUserId] = useState<string, null>('');
   const { currentUserData }: UserState = useSelector(state => state.user);
+  const { chats }: ChatState = useSelector(state => state.chat);
+  const dispatch = useDispatch();
 
   const onAddToChat = async (userId: string) => {
     try {
-      setSelectrUserId(userId);
+      setSelectUserId(userId);
       setLoading(true);
 
       const response = await CreateNewChat({
-        users: [userId, currentUserData._id],
-        createBy: currentUserData._id,
+        users: [userId, currentUserData?._id],
+        createdBy: currentUserData?._id,
         isGroupChat: false
       });
 
@@ -33,6 +36,9 @@ export default function NewChatModal({
         throw new Error(response.error);
       }
 
+      console.log('response', response);
+
+      dispatch(setChats(response));
       message.success('Chat created successfully!');
       setShowNewChatModal(false);
     } catch (err) {
@@ -79,7 +85,9 @@ export default function NewChatModal({
         {!loading && users.length > 0 && (
           <div className="flex flex-col gap-5">
             {users.map((user) => {
-              if (user._id === currentUserData._id) {
+              const chatAlreadyCreated = chats.find((chat) => chat.users.find(u => u._id === user._id));
+
+              if (user._id === currentUserData._id || chatAlreadyCreated) {
                 return null;
               }
 

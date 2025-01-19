@@ -21,6 +21,12 @@ export default function ChatsHeader() {
       </Dropdown.Button>
     </div>
 
+    <input
+      type='text'
+      placeholder="Search chats..."
+      className="bg-gray-100 w-full border border-gray-300 rounded-md px-3 h-14 mt-5 focus-outline-none focus:border-primary"
+    />
+
     {showNewChatModal && <NewChatModal
       showNewChatModal={showNewChatModal}
       setShowNewChatModal={setShowNewChatModal}
