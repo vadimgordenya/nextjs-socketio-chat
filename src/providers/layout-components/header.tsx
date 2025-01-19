@@ -41,7 +41,7 @@ export default function Header() {
     return null;
   }
 
-  return <div className="bg-gray-200 w-full p-5 flex justify-between items-center border-b border-solid border-gray-300">
+  return <div className="bg-gray-200 w-full py-5 px-3 flex justify-between items-center border-b border-solid border-gray-300">
     <div>
       <h1 className="text-2xl font-bold text-primary uppercase">Chat</h1>
     </div>
