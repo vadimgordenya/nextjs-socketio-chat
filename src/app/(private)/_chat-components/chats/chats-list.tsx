@@ -1,4 +1,4 @@
-import { message } from 'antd';
+import { message, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setChats } from '@/redux/chatSlice';
@@ -37,8 +37,18 @@ export default function ChatsList() {
   }, [currentUserData]);
 
   return <div>
-    <div className='flex flex-col gap-5 mt-5'>
-      {chats.map((chat) => <ChatCard chat={chat} />)}
-    </div>
+    {chats.length > 0 && (
+      <div className='flex flex-col gap-5 mt-5'>
+        {chats.map((chat) => <ChatCard chat={chat} />)}
+      </div>
+    )}
+    {loading && (
+      <div className="flex mt-32 items-center justify-center">
+        <div className="flex flex-col">
+          <Spin />
+          <span className="text-gray-500 text-sm my-5">Loading chats...</span>
+        </div>
+      </div>
+    )}
   </div>
 }
