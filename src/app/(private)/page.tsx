@@ -7,7 +7,7 @@ export default async function Home() {
   return (
     <div className="flex h-[85vh]">
       <Chats />
-      <Divider type="vertical" className="h-full border-gray-300" />
+      <Divider type="vertical" className="h-full border-gray-300 m-0" />
       <ChatArea />
     </div>
   )

@@ -36,8 +36,6 @@ export default function NewChatModal({
         throw new Error(response.error);
       }
 
-      console.log('response', response);
-
       dispatch(setChats(response));
       message.success('Chat created successfully!');
       setShowNewChatModal(false);

@@ -5,8 +5,6 @@ export const CreateNewChat = async (payload) => {
   try {
     await ChatModel.create(payload);
 
-    console.log('payload', payload);
-
     const newChats = await ChatModel.find({
       users: {
         $in: [payload.createdBy]
