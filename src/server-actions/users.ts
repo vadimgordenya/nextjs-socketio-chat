@@ -1,7 +1,7 @@
 'use server';
 import { connectMongoDB } from '@/config/db-config';
 import UserModel from '@/models/user-model';
-import { currentUser, User } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 
 connectMongoDB();
 
@@ -27,6 +27,22 @@ export const GetCurrentUserFromMongoDB = async () => {
     const newUser = await UserModel.create(newUserPayload);
 
     return JSON.parse(JSON.stringify(newUser));
+  } catch (error) {
+    return {
+      error: error.message
+    }
+  }
+}
+
+export const GetAllUsers = async () => {
+  try {
+    const users = await UserModel.findAll();
+
+    if (!users?.length) {
+      throw new Error('Failed to get users!');
+    }
+
+    return JSON.parse(JSON.stringify(users));
   } catch (error) {
     return {
       error: error.message
