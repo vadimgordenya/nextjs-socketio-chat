@@ -1,7 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import Recipient from '@/app/(private)/_chat-components/chat-area/recipient';
 import { ChatState } from '@/redux/chatSlice';
+import Recipient from '@/app/(private)/_chat-components/chat-area/recipient';
+import Messages from '@/app/(private)/_chat-components/chat-area/messages';
+import NewMessage from '@/app/(private)/_chat-components/chat-area/new-message';
 
 export default function ChatArea() {
   const { selectedChat }: ChatState = useSelector(state => state.chat);
@@ -15,7 +17,9 @@ export default function ChatArea() {
     </div>
   }
 
-  return <div className="flex-1">
-    {selectedChat && <Recipient />}
+  return selectedChat && <div className="flex-1 flex flex-col justify-between">
+    <Recipient />
+    <Messages />
+    <NewMessage />
   </div>
 }
