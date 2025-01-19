@@ -20,7 +20,7 @@ export const GetCurrentUserFromMongoDB = async () => {
       clerkUserId: clerkUser.id,
       name: `${clerkUser.firstName} ${clerkUser.lastName}`,
       userName: clerkUser.username,
-      email: clerkUser.emailAddresses?.[0].emailAddress || '',
+      email: clerkUser.emailAddresses?.[0]?.emailAddress || '',
       profilePicture: clerkUser.imageUrl
     };
 
@@ -36,7 +36,7 @@ export const GetCurrentUserFromMongoDB = async () => {
 
 export const GetAllUsers = async () => {
   try {
-    const users = await UserModel.findAll();
+    const users = await UserModel.find({});
 
     if (!users?.length) {
       throw new Error('Failed to get users!');
