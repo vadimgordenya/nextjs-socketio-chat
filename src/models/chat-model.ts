@@ -35,7 +35,7 @@ const chatSchema = new mongoose.Schema({
   },
   unreadCounts: {
     type: Object,
-    ref: {}
+    default: {}
   }
 }, { timestamps: true });
 

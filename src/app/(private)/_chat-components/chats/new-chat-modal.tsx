@@ -1,9 +1,10 @@
 import { Button, Divider, message, Modal, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { UserType } from 'src/interfaces';
+import { UserType } from '@/interfaces';
 import { GetAllUsers } from '@/server-actions/users';
 import { UserState } from '@/redux/userSlice';
+import { CreateNewChat } from '@/server-actions/chats';
 
 export default function NewChatModal({
   showNewChatModal,
@@ -14,7 +15,32 @@ export default function NewChatModal({
 }) {
   const [users, setUsers] = useState<UserType[] | []>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedUserId, setSelectrUserId] = useState<string, null>('');
   const { currentUserData }: UserState = useSelector(state => state.user);
+
+  const onAddToChat = async (userId: string) => {
+    try {
+      setSelectrUserId(userId);
+      setLoading(true);
+
+      const response = await CreateNewChat({
+        users: [userId, currentUserData._id],
+        createBy: currentUserData._id,
+        isGroupChat: false
+      });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      message.success('Chat created successfully!');
+      setShowNewChatModal(false);
+    } catch (err) {
+      message.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     const getUsers = async () => {
@@ -49,7 +75,7 @@ export default function NewChatModal({
         <h1 className="text-primary text-center text-xl font-bold uppercase">
           Create New Chat
         </h1>
-        {loading &&  <div className='flex justify-center my-20'><Spin /></div>}
+        {loading && !selectedUserId && <div className='flex justify-center my-20'><Spin /></div>}
         {!loading && users.length > 0 && (
           <div className="flex flex-col gap-5">
             {users.map((user) => {
@@ -69,7 +95,11 @@ export default function NewChatModal({
                       {user.name}
                     </span>
                     </div>
-                    <Button size="small">Add To Chat</Button>
+                    <Button
+                      loading={loading && selectedUserId === user._id}
+                      size="small"
+                      onClick={() => onAddToChat(user._id)}
+                    >Add To Chat</Button>
                   </div>
                   {users.length > 2 && <Divider className="border-gray-200 my-[1px]" />}
                 </>
