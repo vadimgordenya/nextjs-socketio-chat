@@ -26,8 +26,6 @@ const Messages = () => {
           throw new Error(response.error.message);
         }
 
-        console.log('messages', response);
-
         setMessages(response);
       } catch (error) {
         message.error(error.message);
@@ -40,7 +38,7 @@ const Messages = () => {
   }, [selectedChat]);
 
   return (
-    <div className="flex-1 p-3">
+    <div className="flex-1 p-3 overflow-y-auto">
       <div className='flex flex-col gap-3'>
         {messages.map((message: MessageType) =>
           <Message key={message._id} message={message} />
