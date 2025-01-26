@@ -27,6 +27,7 @@ export const GetAllChats = async (userId) => {
       }
     }).populate('users')
       .populate('lastMessage')
+      .populate('createdBy')
       .populate({
         path: 'lastMessage',
         populate: {
