@@ -7,12 +7,14 @@ import { uploadImageToFirebaseStorageAndReturnUrl } from '@/helpers/image-upload
 import { UserType } from '@/interfaces/index';
 import { UserState } from '@/redux/userSlice';
 import { CreateNewChat } from '@/server-actions/chats';
+import { ChatType } from '@/interfaces';
+import { UpdateChat } from '@/server-actions/chats';
 
-const GroupForm = ({ users }: { users: UserType[] }) => {
+const GroupForm = ({ users, initialData }: { users: UserType[], initialData: ChatType }) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const { currentUserData }: UserState = useSelector(state => state.user);
+  const [loading, setLoading] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>(initialData?.users.filter((userId) => userId !== currentUserData?._id) || []);
   const [selectedProfilePicture, setSelectedProfilePicture] = useState<File>();
 
   const onSelectUser = (user) => {
@@ -35,14 +37,16 @@ const GroupForm = ({ users }: { users: UserType[] }) => {
         users: [...selectedUsers, currentUserData._id],
         createdBy: currentUserData._id,
         isGroupChat: true,
-        groupProfilePicture: ''
+        groupProfilePicture: initialData?.groupProfilePicture || ''
       };
 
       if (selectedProfilePicture) {
         payload.groupProfilePicture = await uploadImageToFirebaseStorageAndReturnUrl(selectedProfilePicture);
       }
 
-      const response = await CreateNewChat(payload);
+      const response = initialData
+        ? await UpdateChat({ chatId: initialData?._id!, payload })
+        : await CreateNewChat(payload);
 
       if (response.error) {
         throw new Error(response.error)
@@ -75,7 +79,7 @@ const GroupForm = ({ users }: { users: UserType[] }) => {
         ))}
       </div>
       <div>
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form layout="vertical" onFinish={onFinish} initialValues={initialData}>
           <Form.Item name="groupName" label="Group Name"
             rules={[{required: true, message: 'Please input group name!'}]}
           >
@@ -101,7 +105,7 @@ const GroupForm = ({ users }: { users: UserType[] }) => {
               Cancel
             </Button>
             <Button type="primary" htmlType="submit" disabled={loading}>
-              Create Group
+              {initialData ? 'Update Group' : 'Create Group'}
             </Button>
           </div>
         </Form>
