@@ -37,27 +37,29 @@ export default function Header() {
     getCurrentUser();
   }, [isPublicRoute]);
 
-  if (isPublicRoute) {
+  if (isPublicRoute || !currentUserData) {
     return null;
   }
 
-  return <div className="bg-gray-200 w-full py-5 px-3 flex justify-between items-center border-b border-solid border-gray-300">
-    <div>
-      <h1 className="text-2xl font-bold text-primary uppercase">Chat</h1>
-    </div>
-    <div className="gap-5 flex items-center">
-      <span className="text-sm">{currentUserData?.name}</span>
-      <Avatar
-        className="cursor-pointer"
-        onClick={() => setShowCurrentUserInfo(true)}
-        src={currentUserData?.profilePicture}
-      />
-    </div>
+  return (
+    <div className="bg-gray-200 w-full py-5 px-3 flex justify-between items-center border-b border-solid border-gray-300">
+      <div>
+        <h1 className="text-2xl font-bold text-primary uppercase">Chat</h1>
+      </div>
+      <div className="gap-5 flex items-center">
+        <span className="text-sm">{currentUserData?.name}</span>
+        <Avatar
+          className="cursor-pointer"
+          onClick={() => setShowCurrentUserInfo(true)}
+          src={currentUserData?.profilePicture}
+        />
+      </div>
 
-    {showCurrentUserInfo &&
-      <CurrentUserInfo
-        setShowCurrentUserInfo={setShowCurrentUserInfo}
-        showCurrentUserInfo={showCurrentUserInfo}
-      />}
-  </div>
+      {showCurrentUserInfo &&
+        <CurrentUserInfo
+          setShowCurrentUserInfo={setShowCurrentUserInfo}
+          showCurrentUserInfo={showCurrentUserInfo}
+        />}
+    </div>
+  );
 }
