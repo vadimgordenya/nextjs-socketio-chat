@@ -35,6 +35,20 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
     lastMessageTime = formatDateTime(chat.lastMessage.createdAt);
   }
 
+  const unreadCounts = () => {
+    if (!chat.unreadCounts?.[currentUserData?._id]) {
+      return null;
+    }
+
+    return (
+      <div className="bg-green-700 h-5 w-5 rounded-full flex justify-center items-center">
+        <span className="text-white text-xs">
+          {chat.unreadCounts[currentUserData?._id]}
+        </span>
+      </div>
+    );
+  }
+
   return <div
     className={`flex justify-between hover:bg-gray-100 py-3 px-2 rounded cursor-pointer
     ${selectedChat?._id === chat?._id ? 'bg-gray-100 border border-gray-300' : ''}
@@ -49,6 +63,7 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
       </div>
     </div>
     <div>
+      {unreadCounts()}
       <span className="text-gray-500 text-xs">{lastMessageTime}</span>
     </div>
   </div>
