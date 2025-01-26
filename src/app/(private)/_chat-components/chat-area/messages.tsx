@@ -5,11 +5,14 @@ import { MessageType } from '@/interfaces';
 import { ChatState } from 'sr@c/redux/chatSlice';
 import { GetChatMessages } from '@/server-actions/messages';
 import Message from '@/app/(private)/_chat-components/chat-area/message';
+import { UserState } from '@/redux/userSlice';
+import { ReadAllMessages } from '@/server-actions/messages';
 
 const Messages = () => {
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<MessageType[]>([]);
   const { selectedChat }: ChatState = useSelector(state => state.chat);
+  const { currentUserData }: UserState = useSelector(state => state.user);
 
   useEffect(() => {
     if (!selectedChat._id) {
@@ -35,6 +38,10 @@ const Messages = () => {
     }
 
     getMessages();
+    ReadAllMessages({
+      chatId: selectedChat._id,
+      userId: currentUserData._id
+    });
   }, [selectedChat]);
 
   return (
