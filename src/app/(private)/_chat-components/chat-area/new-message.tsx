@@ -11,6 +11,10 @@ const NewMessage = () => {
   const { selectedChat}: ChatState = useSelector(state => state.chat);
 
   const onSend = async () => {
+    if (!text) {
+      return;
+    }
+
     try {
       const dbPayload = {
         text,
@@ -42,6 +46,11 @@ const NewMessage = () => {
           className="w-full border border-solid border-gray-300 focus:outline-none focus:border-gray-500 h-[45px] px-5"
           onChange={(e) => setText(e.target.value)}
           value={text}
+          onKeyDown={async (event) => {
+            if (event.key === 'Enter') {
+              await onSend();
+            }
+          }}
         />
       </div>
       <Button disabled={!text} type="primary" className="h-[45px]" onClick={onSend}>Send</Button>

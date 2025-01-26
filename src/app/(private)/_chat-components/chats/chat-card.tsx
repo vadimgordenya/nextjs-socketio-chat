@@ -1,9 +1,10 @@
 import React from 'react';
-import { ChatType } from '@/interfaces';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserState } from '@/redux/userSlice';
 import { setSelectedChat } from '@/redux/chatSlice';
 import { ChatState } from '@/redux/chatSlice';
+import { ChatType } from '@/interfaces';
+import { formatDateTime } from '@/helpers/date-formats';
 
 export default function ChatCard({ chat }: { chat: ChatType }) {
   const dispatch = useDispatch();
@@ -26,6 +27,14 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
     chatImage = recipient.profilePicture;
   }
 
+  if (chat.lastMessage) {
+    lastMessage = chat.lastMessage.text;
+    lastMessageSenderName = chat.lastMessage.sender._id === currentUserData._id
+      ? 'You'
+      : chat.lastMessage.sender.name.split(' ')[0];
+    lastMessageTime = formatDateTime(chat.lastMessage.createdAt);
+  }
+
   return <div
     className={`flex justify-between hover:bg-gray-100 py-3 px-2 rounded cursor-pointer
     ${selectedChat?._id === chat?._id ? 'bg-gray-100 border border-gray-300' : ''}
@@ -34,10 +43,13 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
   >
     <div className="flex gap-5 items-center">
       <img src={chatImage} alt='avatar' className="w-10 h-10 rounded-full" />
-      <span className="text-gray-700 text-sm">{chatName}</span>
+      <div className="flex flex-col gap1">
+        <span className="text-gray-700 text-sm">{chatName}</span>
+        <span className="text-gray-700 text-sm">{lastMessageSenderName}: {lastMessage}</span>
+      </div>
     </div>
     <div>
-      <span>{lastMessageTime}</span>
+      <span className="text-gray-500 text-xs">{lastMessageTime}</span>
     </div>
   </div>
 }
