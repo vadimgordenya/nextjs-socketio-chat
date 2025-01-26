@@ -19,7 +19,7 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
 
   if (chat.isGroupChat) {
     chatName = chat.groupName;
-    chatImage = chat.groupPicture;
+    chatImage = chat.groupProfilePicture;
   } else {
     const recipient = chat.users.find(user => user._id !== currentUserData._id);
 
@@ -30,8 +30,8 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
   if (chat.lastMessage) {
     lastMessage = chat.lastMessage.text;
     lastMessageSenderName = chat.lastMessage.sender._id === currentUserData._id
-      ? 'You'
-      : chat.lastMessage.sender.name.split(' ')[0];
+      ? 'You:'
+      : `${chat.lastMessage.sender.name.split(' ')[0]}:`;
     lastMessageTime = formatDateTime(chat.lastMessage.createdAt);
   }
 
@@ -59,7 +59,9 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
       <img src={chatImage} alt='avatar' className="w-10 h-10 rounded-full" />
       <div className="flex flex-col gap1">
         <span className="text-gray-700 text-sm">{chatName}</span>
-        <span className="text-gray-700 text-sm">{lastMessageSenderName}: {lastMessage}</span>
+        {lastMessageSenderName && lastMessage
+          && <span className="text-gray-700 text-sm">{lastMessageSenderName} {lastMessage}</span>
+        }
       </div>
     </div>
     <div>
