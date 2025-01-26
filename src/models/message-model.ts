@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const messageSchema = new mongoose.Schema({
   chat: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'users',
+    ref: 'chats',
     required: true
   },
   sender: {
@@ -22,6 +22,7 @@ const messageSchema = new mongoose.Schema({
   readBy: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'users',
+    default: []
   }
 }, { timestamps: true });
 

@@ -6,11 +6,11 @@ const chatSchema = new mongoose.Schema({
     ref: 'users'
   },
   createdBy: {
-    type: [mongoose.Schema.Types.ObjectId],
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'users'
   },
   lastMessage: {
-    type: [mongoose.Schema.Types.ObjectId],
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'messages'
   },
   isGroupChat: {
@@ -21,7 +21,7 @@ const chatSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  profilePicture: {
+  groupProfilePicture: {
     type: String,
     default: ''
   },
