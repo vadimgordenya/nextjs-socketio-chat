@@ -8,7 +8,7 @@ export const SendNewMessage = async (payload: {
   image?: string;
   chat: string;
   sender: string;
-  readBY: string;
+  readBy: string;
 }) => {
   try {
     const newMessage = new MessageModel(payload);
@@ -19,6 +19,20 @@ export const SendNewMessage = async (payload: {
     });
 
     return { message: "Message sent successfully" };
+  } catch (error) {
+    return {
+      error: error.message
+    }
+  }
+}
+
+export const GetChatMessages = async (chatId: string) => {
+  try {
+    const messages = await MessageModel.find({ chat: chatId })
+      .populate('sender')
+      .sort({ createAt: 1 });
+
+    return JSON.parse(JSON.stringify(messages));
   } catch (error) {
     return {
       error: error.message
