@@ -8,6 +8,7 @@ import { UserType } from '@/interfaces';
 import { uploadImageToFirebaseStorageAndReturnUrl } from '@/helpers/image-upload';
 import { UpdateUserProfile } from '@/server-actions/users';
 import { setCurrentUser } from '@/redux/userSlice';
+import socket from '@/config/socket-config';
 
 export default function CurrentUserInfo({ setShowCurrentUserInfo, showCurrentUserInfo }: {
   setShowCurrentUserInfo: (flag: boolean) => void,
@@ -35,6 +36,7 @@ export default function CurrentUserInfo({ setShowCurrentUserInfo, showCurrentUse
   const onLogout = async () => {
     try {
       setLoading(true);
+      socket.emit('logout', currentUserData._id);
       await signOut();
       setShowCurrentUserInfo(false);
       message.success('Logged out successfully');

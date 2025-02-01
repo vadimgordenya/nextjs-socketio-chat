@@ -7,6 +7,8 @@ import CurrentUserInfo from '@/providers/layout-components/current-user-info';
 import { usePathname } from 'next/navigation';
 import { setCurrentUser, UserState } from '@/redux/userSlice';
 import { UserType } from '@/interfaces';
+import socket from '@/config/socket-config';
+import { setOnlineUsers } from '@/redux/userSlice';
 
 export default function Header() {
   const pathName = usePathname();
@@ -36,6 +38,17 @@ export default function Header() {
 
     getCurrentUser();
   }, [isPublicRoute]);
+
+  useEffect(() => {
+    if (currentUserData) {
+      socket.emit('join', currentUserData._id);
+
+      socket.on('online-users-updated', (onlineUsers: string[]) => {
+        dispatch(setOnlineUsers(onlineUsers));
+        console.log('current users online', onlineUsers);
+      });
+    }
+  }, [currentUserData])
 
   if (isPublicRoute || !currentUserData) {
     return null;

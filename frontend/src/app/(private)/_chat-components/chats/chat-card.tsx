@@ -9,7 +9,7 @@ import { formatDateTime } from '@/helpers/date-formats';
 export default function ChatCard({ chat }: { chat: ChatType }) {
   const dispatch = useDispatch();
   const { selectedChat }: ChatState = useSelector(state => state.chat);
-  const { currentUserData }: UserState = useSelector(state => state.user);
+  const { currentUserData, onlineUsers }: UserState = useSelector(state => state.user);
   let chatName = '';
   let chatImage = '';
 
@@ -47,7 +47,21 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
         </span>
       </div>
     );
-  }
+  };
+
+  const onlineIndicator = () => {
+    if (chat.isGroupChat) {
+      return null;
+    }
+
+    const recipientId = chat.users?.find((user) => user._id !== currentUserData._id)?._id;
+
+    console.log('onlineUsers', onlineUsers);
+
+    if (onlineUsers?.includes(recipientId)) {
+      return <div className="w-2 h-2 rounded-full bg-green-700"></div>
+    }
+  };
 
   return <div
     className={`flex justify-between hover:bg-gray-100 py-3 px-2 rounded cursor-pointer
@@ -58,7 +72,7 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
     <div className="flex gap-5 items-center">
       <img src={chatImage} alt='avatar' className="w-10 h-10 rounded-full" />
       <div className="flex flex-col gap1">
-        <span className="text-gray-700 text-sm">{chatName}</span>
+        <span className="text-gray-700 text-sm flex gap-2 items-center">{chatName} {onlineIndicator()}</span>
         {lastMessageSenderName && lastMessage
           && <span className="text-gray-700 text-sm">{lastMessageSenderName} {lastMessage}</span>
         }

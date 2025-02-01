@@ -5,7 +5,8 @@ const userSlice = createSlice({
   name: 'user',
   initialState: {
     currentUserData: null,
-    currentUserId: ''
+    currentUserId: '',
+    onlineUsers: []
   },
   reducers: {
     setCurrentUser: (state, action) => {
@@ -13,14 +14,18 @@ const userSlice = createSlice({
     },
     setCurrentUserId: (state, action) => {
       state.currentUserId = action.payload;
+    },
+    setOnlineUsers: (state, action) => {
+      state.onlineUsers = action.payload;
     }
   }
 });
 
-export const { setCurrentUser, setCurrentUserId } = userSlice.actions;
+export const { setCurrentUser, setCurrentUserId, setOnlineUsers } = userSlice.actions;
 export default userSlice;
 
 export interface UserState {
   currentUserData: UserType | null,
-  currentUserId: string
+  currentUserId: string;
+  onlineUsers: string[]
 }
