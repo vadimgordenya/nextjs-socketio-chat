@@ -53,7 +53,7 @@ export default function ChatsList() {
 
       let chatToUpdate = prevChats[indexOfChatToUpdate];
 
-      if (chatToUpdate.lastMessage.socketMessageId === message.socketMessageId) {
+      if (chatToUpdate?.lastMessage?.socketMessageId === message?.socketMessageId) {
         return;
       }
 

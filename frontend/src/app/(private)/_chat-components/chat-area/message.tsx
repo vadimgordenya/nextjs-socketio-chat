@@ -14,7 +14,10 @@ const Message = ({ message }: { message: MessageType }) => {
   return isLoggedInUserMessage ? (
     <div className="flex justify-end gap-x-2">
       <div className="flex flex-col gap-2">
-        <p className="bg-primary text-white py-1 px-5 rounded-xl rounded-tl-none text-sm">{message.text}</p>
+        {message.text && <p className="bg-primary text-white py-1 px-5 rounded-xl rounded-tl-none text-sm">
+          {message.text}
+        </p>}
+        {message.image && <img src={message.image} alt="image" className="w-40 h-40 rounded-xl rounded-tl-none" />}
         <span className="text-gray-500 text-xs">
           {formatDateTime(message.createdAt)}
         </span>
@@ -27,10 +30,11 @@ const Message = ({ message }: { message: MessageType }) => {
       <div className="flex flex-col gap-2">
         <div className="flex flex-col bg-gray-200 py-1 px-7 rounded-xl rounded-tr-none ">
           <span className="text-blue-500 text-xs font-semibold">{message.sender.name}</span>
-          <p className="text-black m-none pt-1 text-sm">
+          {message.text && <p className="text-black m-none pt-1 text-sm">
             {message.text}
-          </p>
+          </p>}
         </div>
+        {message.image && <img src={message.image} alt="image" className="w-40 h-40 rounded-xl rounded-tl-none" />}
         <span className="text-gray-500 text-xs">
           {formatDateTime(message.createdAt)}
         </span>

@@ -7,23 +7,36 @@ import { UserState } from '@/redux/userSlice';
 import { ChatState } from '@/redux/chatSlice';
 import { SendNewMessage } from '@/server-actions/messages';
 import socket from '@/config/socket-config';
+import ImageSelector from '@/app/(private)/_chat-components/chat-area/image-selector';
+import { uploadImageToFirebaseStorageAndReturnUrl } from '@/helpers/image-upload';
 
 const NewMessage = () => {
   const [text, setText] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showImageSelector, setShowImageSelector] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
   const { currentUserData }: UserState = useSelector(state => state.user);
   const { selectedChat}: ChatState = useSelector(state => state.chat);
 
   const onSend = async () => {
-    if (!text) {
+    if (!text && !selectedImageFile) {
       return;
     }
 
+    setLoading(true);
+
     try {
+      let image = '';
+
+      if (selectedImageFile) {
+        image = await uploadImageToFirebaseStorageAndReturnUrl(selectedImageFile);
+      }
+
       const commonPayload = {
         text,
-        image: '',
+        image,
         socketMessageId: dayjs().unix()
       };
 
@@ -36,6 +49,9 @@ const NewMessage = () => {
       socket.emit('send-new-message', socketPayload);
 
       setText('');
+      setSelectedImageFile(null);
+      setShowImageSelector(false);
+      setShowEmojiPicker(false);
 
       const dbPayload = {
         ...commonPayload,
@@ -45,6 +61,8 @@ const NewMessage = () => {
       SendNewMessage(dbPayload);
     } catch (error) {
       message.error(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -60,18 +78,21 @@ const NewMessage = () => {
 
   return (
     <div className="flex gap-5 p-3 bg-gray-100 border border-t border-gray-200 relative">
-      <div>
+      <div className="flex gap-5">
         {showEmojiPicker && (
           <div className="absolute lef-10 bottom-14">
             <EmojiPicker
               height={350}
               onEmojiClick={(emojiObject) => {
-                setText(text + emojiObject.emoji);
+                setText((prevText) => prevText + emojiObject.emoji);
                 inputRef.current?.focus();
               }}
             />
           </div>
         )}
+        <Button onClick={() => setShowImageSelector(!showImageSelector)} className="border-gray-200 h-[45px]">
+          { showEmojiPicker ? <i className="ri-image-ai-line"></i> : <i className="ri-folder-image-line"></i>}
+        </Button>
         <Button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="border-gray-200 h-[45px]">
           { showEmojiPicker ? <i className="ri-keyboard-line"></i> : <i className="ri-emoji-sticker-line"></i>}
         </Button>
@@ -92,6 +113,15 @@ const NewMessage = () => {
         />
       </div>
       <Button disabled={!text} type="primary" className="h-[45px]" onClick={onSend}>Send</Button>
+
+      {showImageSelector && <ImageSelector
+        showImageSelector={showImageSelector}
+        setShowImageSelector={setShowImageSelector}
+        selectedImageFile={selectedImageFile}
+        setSelectedImageFile={setSelectedImageFile}
+        onSend={onSend}
+        loading={loading}
+      />}
     </div>
   );
 };
