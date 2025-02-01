@@ -1,6 +1,7 @@
 import { Button, message } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
+import EmojiPicker from 'emoji-picker-react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { UserState } from '@/redux/userSlice';
 import { ChatState } from '@/redux/chatSlice';
@@ -9,6 +10,8 @@ import socket from '@/config/socket-config';
 
 const NewMessage = () => {
   const [text, setText] = useState('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const inputRef = useRef(null);
   const { currentUserData }: UserState = useSelector(state => state.user);
   const { selectedChat}: ChatState = useSelector(state => state.chat);
 
@@ -56,12 +59,26 @@ const NewMessage = () => {
   }, [selectedChat, text]);
 
   return (
-    <div className="flex gap-5 p-3 bg-gray-100 border border-t border-gray-200">
+    <div className="flex gap-5 p-3 bg-gray-100 border border-t border-gray-200 relative">
       <div>
-
+        {showEmojiPicker && (
+          <div className="absolute lef-10 bottom-14">
+            <EmojiPicker
+              height={350}
+              onEmojiClick={(emojiObject) => {
+                setText(text + emojiObject.emoji);
+                inputRef.current?.focus();
+              }}
+            />
+          </div>
+        )}
+        <Button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="border-gray-200 h-[45px]">
+          { showEmojiPicker ? <i className="ri-keyboard-line"></i> : <i className="ri-emoji-sticker-line"></i>}
+        </Button>
       </div>
       <div className="flex-1">
         <input
+          ref={inputRef}
           type="text"
           placeholder="Type a message"
           className="w-full border border-solid border-gray-300 focus:outline-none focus:border-gray-500 h-[45px] px-5"

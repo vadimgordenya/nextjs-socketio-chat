@@ -5,6 +5,7 @@ import ThemeProvider from '@/providers/theme-provider';
 import LayoutProvider from '@/providers/layout-provider';
 import ReduxProvider from '@/providers/redux-provider';
 import './globals.css';
+import 'remixicon/fonts/remixicon.css'
 
 export const metadata: Metadata = {
   title: 'NextJS - SocketIO Chat',
