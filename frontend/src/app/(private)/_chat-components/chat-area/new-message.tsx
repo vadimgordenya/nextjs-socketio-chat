@@ -1,6 +1,6 @@
 import { Button, message } from 'antd';
 import dayjs from 'dayjs';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { UserState } from '@/redux/userSlice';
 import { ChatState } from '@/redux/chatSlice';
@@ -44,6 +44,15 @@ const NewMessage = () => {
       message.error(error.message);
     }
   }
+
+  useEffect(() => {
+    if (text) {
+      socket.emit('typing', {
+        chat: selectedChat,
+        senderId: currentUserData._id
+      });
+    }
+  }, [selectedChat, text]);
 
   return (
     <div className="flex gap-5 p-3 bg-gray-100 border border-t border-gray-200">

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChatState } from '@/redux/chatSlice';
 import RecipientInfo from '@/app/(private)/_chat-components/chat-area/recipients-info';
 import { UserState } from '@/redux/userSlice';
+import socket from '@/config/socket-config';
 
 const Recipient = () => {
+  const [typing, setTyping] = useState(false);
   const [showRecipientInfo, setShowRecipientInfo] = useState(false);
   const { selectedChat }: ChatState = useSelector(state => state.chat);
   const { currentUserData }: UserState = useSelector(state => state.user);
@@ -22,6 +24,28 @@ const Recipient = () => {
     chatImage = recipient.profilePicture;
   }
 
+  const typingAnimation = () => {
+    if (typing) {
+      return <span className="text-green-700 font-semibold text-xs">Typing...</span>
+    }
+  }
+
+  useEffect(() => {
+    socket.on('typing', (chat) => {
+      if (selectedChat._id === chat._id) {
+        setTyping(true);
+      }
+
+      setTimeout(() => {
+        setTyping(false);
+      }, 2000);
+    });
+
+    return () => {
+      socket.off('typing');
+    }
+  }, [selectedChat])
+
   return (
     <div className="flex justify-between py-3 px-5 border-0 border-b border-gray-200 bg-gray-400/5">
       <div
@@ -31,7 +55,10 @@ const Recipient = () => {
         }}
       >
         <img src={chatImage} alt='avatar' className="w-10 h-10 rounded-full" />
-        <span className="text-gray-700 text-sm">{chatName}</span>
+        <div className="flex flex-col gap-1">
+          <span className="text-gray-700 text-sm">{chatName}</span>
+          {typingAnimation()}
+        </div>
       </div>
       {showRecipientInfo && (
         <RecipientInfo showRecipientInfo={showRecipientInfo} setShowRecipientInfo={setShowRecipientInfo} />
