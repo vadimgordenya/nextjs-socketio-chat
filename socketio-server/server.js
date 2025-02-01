@@ -32,6 +32,12 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('send-new-message', (message) => {
+    message.chat.users.forEach((user) => {
+      io.to(user._id).emit('new-message-received', message);
+    });
+  });
+
   socket.on('logout', (userId) => {
     socket.leave(userId);
     onlineUsers = onlineUsers.filter((user) => user !== userId);

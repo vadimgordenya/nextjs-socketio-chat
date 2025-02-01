@@ -21,7 +21,7 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
     chatName = chat.groupName;
     chatImage = chat.groupProfilePicture;
   } else {
-    const recipient = chat.users.find(user => user._id !== currentUserData._id);
+    const recipient = chat.users.find((user) => user._id !== currentUserData._id);
 
     chatName = recipient.name;
     chatImage = recipient.profilePicture;

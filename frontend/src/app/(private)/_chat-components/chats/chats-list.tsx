@@ -6,12 +6,16 @@ import { UserState } from '@/redux/userSlice';
 import { GetAllChats } from '@/server-actions/chats';
 import { ChatState } from '@/redux/chatSlice';
 import ChatCard from '@/app/(private)/_chat-components/chats/chat-card';
+import socket from '@/config/socket-config';
+import { MessageType } from '@/interfaces';
+import store from '@/redux/store';
+import { ChatType } from '@/interfaces/index';
 
 export default function ChatsList() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const { currentUserData }: UserState = useSelector(state => state.user);
-  const { chats }: ChatState = useSelector(state => state.chat);
+  const { chats, selectedChat }: ChatState = useSelector(state => state.chat);
 
   useEffect(() => {
     const getChats = async () => {
@@ -35,6 +39,47 @@ export default function ChatsList() {
       getChats();
     }
   }, [currentUserData]);
+
+  useEffect(() => {
+    socket.on('new-message-received', (message: MessageType) => {
+      const { chats }: ChatState = store.getState().chat;
+      let prevChats = [...chats];
+
+      const indexOfChatToUpdate = prevChats.findIndex((chat) => chat._id === message.chat._id);
+
+      if (indexOfChatToUpdate === -1) {
+        return;
+      }
+
+      let chatToUpdate = prevChats[indexOfChatToUpdate];
+
+      if (chatToUpdate.lastMessage.socketeMessageId === message.socketMessageId) {
+        return;
+      }
+
+      let chatToUpdateCopy: ChatType = { ...chatToUpdate };
+
+      chatToUpdateCopy.lastMessage = message;
+      chatToUpdateCopy.updatedAt = message.createdAt;
+      chatToUpdateCopy.unreadCounts = { ...chatToUpdate.unreadCounts };
+
+      if (message.sender?._id !== currentUserData?._id && selectedChat?._id !== message.chat?._id) {
+        chatToUpdateCopy.unreadCounts[currentUserData._id] = chatToUpdateCopy.unreadCounts[currentUserData._id] + 1;
+      }
+
+      prevChats[indexOfChatToUpdate] = chatToUpdateCopy;
+
+      prevChats = [
+        prevChats[indexOfChatToUpdate],
+        ...prevChats.filter((chat) => chat._id !== message.chat._id)
+      ];
+
+      console.log('prevChats', prevChats);
+
+      dispatch(setChats(prevChats));
+    });
+  }, [selectedChat]);
+
 
   return <div>
     {chats.length > 0 && (
