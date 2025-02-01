@@ -7,7 +7,7 @@ export const formatDateTime = (date: string): string => {
   if (now.diff(messageData, 'minute') < 1) {
     return 'just now';
   } else if (now.diff(messageData, 'hour')) {
-    return `${now.diff(messageData, 'minute')} minutes ago`
+    return messageData.format('hh:mm A');
   } else if (now.diff(messageData, 'day') < 1) {
     return messageData.format('hh:mm A');
   } else if (now.diff(messageData, 'year') < 1) {
