@@ -49,7 +49,8 @@ const NewMessage = () => {
     if (text) {
       socket.emit('typing', {
         chat: selectedChat,
-        senderId: currentUserData._id
+        senderId: currentUserData._id,
+        senderName: currentUserData.name.split(' ')[0]
       });
     }
   }, [selectedChat, text]);
