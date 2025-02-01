@@ -34,7 +34,7 @@ export const GetAllChats = async (userId) => {
           path: 'sender'
         }
       })
-      .sort({ updatedAt: -1 });
+      .sort({ lastMessageAt: -1 });
 
     return JSON.parse(JSON.stringify(chats));
   } catch (error) {

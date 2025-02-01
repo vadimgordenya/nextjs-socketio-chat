@@ -36,7 +36,7 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
   }
 
   const unreadCounts = () => {
-    if (!chat.unreadCounts?.[currentUserData?._id]) {
+    if (!chat.unreadCounts || !chat.unreadCounts?.[currentUserData?._id] || chat._id === selectedChat?._id) {
       return null;
     }
 
@@ -56,8 +56,6 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
 
     const recipientId = chat.users?.find((user) => user._id !== currentUserData._id)?._id;
 
-    console.log('onlineUsers', onlineUsers);
-
     if (onlineUsers?.includes(recipientId)) {
       return <div className="w-2 h-2 rounded-full bg-green-700"></div>
     }
@@ -67,7 +65,11 @@ export default function ChatCard({ chat }: { chat: ChatType }) {
     className={`flex justify-between hover:bg-gray-100 py-3 px-2 rounded cursor-pointer
     ${selectedChat?._id === chat?._id ? 'bg-gray-100 border border-gray-300' : ''}
     `}
-    onClick={() => dispatch(setSelectedChat(chat))}
+    onClick={() => {
+      console.log('chat', chat);
+      dispatch(setSelectedChat(chat))
+    }
+    }
   >
     <div className="flex gap-5 items-center">
       <img src={chatImage} alt='avatar' className="w-10 h-10 rounded-full" />

@@ -53,7 +53,7 @@ export default function ChatsList() {
 
       let chatToUpdate = prevChats[indexOfChatToUpdate];
 
-      if (chatToUpdate.lastMessage.socketeMessageId === message.socketMessageId) {
+      if (chatToUpdate.lastMessage.socketMessageId === message.socketMessageId) {
         return;
       }
 
@@ -74,8 +74,6 @@ export default function ChatsList() {
         ...prevChats.filter((chat) => chat._id !== message.chat._id)
       ];
 
-      console.log('prevChats', prevChats);
-
       dispatch(setChats(prevChats));
     });
   }, [selectedChat]);
@@ -84,7 +82,7 @@ export default function ChatsList() {
   return <div>
     {chats.length > 0 && (
       <div className='flex flex-col gap-5 mt-5'>
-        {chats.map((chat) => <ChatCard chat={chat} />)}
+        {chats.map((chat) => <ChatCard key={chat._id} chat={chat} />)}
       </div>
     )}
     {loading && (

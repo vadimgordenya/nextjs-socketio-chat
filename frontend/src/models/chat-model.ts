@@ -36,6 +36,10 @@ const chatSchema = new mongoose.Schema({
   unreadCounts: {
     type: Object,
     default: {}
+  },
+  lastMessageAt: {
+    type: String,
+    default: ''
   }
 }, { timestamps: true });
 
