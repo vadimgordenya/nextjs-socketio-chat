@@ -37,7 +37,10 @@ const NewMessage = () => {
       const commonPayload = {
         text,
         image,
-        socketMessageId: dayjs().unix()
+        socketMessageId: dayjs().unix(),
+        createdAt: dayjs().toISOString(),
+        updatedAt: dayjs().toISOString(),
+        readBy: []
       };
 
       const socketPayload = {

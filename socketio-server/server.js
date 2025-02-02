@@ -46,6 +46,12 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('read-all-messages', ({ chatId, users, readByUserId }) => {
+    users.forEach((user) => {
+      io.to(user).emit('user-read-all-chat-message', { chatId, readByUserId });
+    })
+  });
+
   socket.on('logout', (userId) => {
     socket.leave(userId);
     onlineUsers = onlineUsers.filter((user) => user !== userId);

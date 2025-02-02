@@ -43,10 +43,26 @@ const Messages = () => {
     }
 
     getMessages();
-    ReadAllMessages({
-      chatId: selectedChat._id,
-      userId: currentUserData._id
-    });
+
+    let unreadMessages = 0;
+    let chat = chats.find((chat) => chat._id === selectedChat?._id);
+
+    if (chat) {
+      unreadMessages = chat.unreadCounts[currentUserData?._id!] || 0;
+    }
+
+    if (unreadMessages > 0) {
+      ReadAllMessages({
+        chatId: selectedChat._id,
+        userId: currentUserData._id
+      });
+
+      socket.emit('read-all-messages', {
+        chatId: selectedChat._id,
+        readByUserId: currentUserData._id,
+        users: selectedChat.users.filter((user) => user._id !== currentUserData._id).map((user) => user._id)
+      });
+    }
 
     const newChats:ChatType[] = chats.map((chat) => {
       if (chat._id === selectedChat._id) {
@@ -77,8 +93,27 @@ const Messages = () => {
           return [...prev, message];
         });
       }
-    })
-  }, []);
+    });
+
+    socket.on('user-read-all-chat-message', ({ chatId, readByUserId }) => {
+      if (selectedChat._id === chatId) {
+        setMessages((prev) => {
+          const newMessages = prev.map((msg) => {
+            if (msg.sender._id !== readByUserId && !msg.readBy.includes(readByUserId)) {
+              return {
+                ...msg,
+                readBy: [...msg.readBy, readByUserId]
+              };
+            }
+
+            return msg;
+          });
+
+          return newMessages;
+        })
+      }
+    });
+  }, [selectedChat]);
 
   useEffect(() => {
     if (messagesDivRef.current) {
